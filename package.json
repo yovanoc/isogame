@@ -1,0 +1,39 @@
+{
+  "name": "isogame",
+  "version": "1.0.0",
+  "description": "Isometric JS Game",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node dist/index.js",
+    "dev": "babel src -d dist",
+    "prod": "babel src -d dist --minified",
+    "watch": "babel src -d dist --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yovanoc/isogame.git"
+  },
+  "keywords": [
+    "iso",
+    "isometric",
+    "game",
+    "js"
+  ],
+  "author": "Christopher Yovanovitch <yovano_c@outlook.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yovanoc/isogame/issues"
+  },
+  "homepage": "https://github.com/yovanoc/isogame#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-stage-0": "^6.24.1"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "primus": "^7.1.0",
+    "ws": "^3.2.0"
+  }
+}
