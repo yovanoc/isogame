@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>IsoGame</title>
+        <style>
+            html, body {
+                margin: 0;
+            }
+
+            canvas {
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+        <script src="primus.js"></script>
+        <script src="GameClient.js"></script>
+        <script>
+          var client = new GameClient()
+        </script>
+        <script src="main.js"></script>
+    </body>
+</html>

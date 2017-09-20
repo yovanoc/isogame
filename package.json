@@ -36,6 +36,7 @@
     "engine.io": "^3.1.1",
     "engine.io-client": "^3.1.1",
     "moment": "^2.18.1",
-    "primus": "^7.1.0"
+    "primus": "^7.1.0",
+    "redis": "^2.8.0"
   }
 }

@@ -12,7 +12,6 @@ export default class GameServer {
       spark.on('data', (data) => {
         this.Log("[" + spark.id + "] Data : " + JSON.stringify(data))
         spark.write({message: 'LoginAccepted', id: 2, data: { username: 'username'}})
-        spark.end()
       })
 
       spark.on('error', (error) => this.Log("[" + spark.id + "] Error : " + error))

@@ -1,7 +1,10 @@
 import 'babel-polyfill'
 import GameServer from './GameServer'
-import GameClient from './GameClient'
+import Redis from 'redis'
 
 var server = new GameServer()
 
-var client = new GameClient()
+// var redis = Redis.createClient();
+//
+// redis.on('connect', () => console.log('connected'))
+// redis.on('error', (error) => console.log(error.message))
