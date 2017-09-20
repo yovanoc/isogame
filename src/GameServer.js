@@ -2,85 +2,61 @@ import Primus from 'primus'
 import moment from 'moment'
 
 export default class GameServer {
-  constructor() {
+
+  constructor () {
     this.sparks = []
 
     this.primus = Primus.createServer((spark) => {
-      console.log("[" + moment().format('LTS') + "][SERVER][" + spark.id + "] Connected.")
-
-      this.AddSpark(spark)
+      this.Log("[" + spark.id + "] Connected.")
 
       spark.on('data', (data) => {
-        console.log("[" + moment().format('LTS') + "][SERVER][" + spark.id + "] Data : " + data)
-        spark.write("SERVER DATA")
+        this.Log("[" + spark.id + "] Data : " + JSON.stringify(data))
+        spark.write({message: 'LoginAccepted', id: 2, data: { username: 'username'}})
+        spark.end()
       })
 
-      spark.on('error', (error) => {
-        console.log("[" + moment().format('LTS') + "][SERVER][" + spark.id + "] Error : " + error)
-      })
+      spark.on('error', (error) => this.Log("[" + spark.id + "] Error : " + error))
 
-      spark.on('heartbeat', () => {
-        console.log("[" + moment().format('LTS') + "][SERVER] We've received a response to a heartbeat.")
-      })
+      spark.on('heartbeat', () => this.Log("[" + spark.id + "] We've received a response to a heartbeat."))
 
-      spark.on('readyStateChange', (state) => {
-        console.log('[' + moment().format("LTS") + '][SERVER] readyStateChange: %s', state)
-      })
+      spark.on('readyStateChange', (state) => this.Log("[" + spark.id + "] readyStateChange : " + state))
 
       spark.on('end', () => {
-        console.log("[" + moment().format('LTS') + "][SERVER][" + spark.id + "] Disconnected.")
-        this.RemoveSpark(spark.id)
-        console.log("Remaining " + this.sparks.length + " sparks.")
+        this.Log("[" + spark.id + "] Disconnected.")
+        this.Log("Remaining " + this.primus.connected + " sparks.")
       })
     }, { port: 2121, transformer: 'engine.io'})
 
     this.Events()
   }
 
-  GetSpark(sparkId) {
-    return this.sparks.find(x => x.id === sparkId)
-  }
+  Events () {
+    this.primus.on('initialised', () => this.Log("Initialised."))
 
-  AddSpark(spark) {
-    this.sparks.unshift(spark)
-  }
-
-  RemoveSpark(sparkId) {
-    this.sparks.map((spark, index) => {
-      if (spark.id === sparkId) {
-        this.sparks.splice(index, 1)
-        return
-      }
-    })
-  }
-
-  Events() {
-    this.primus.on('initialised', () => {
-      console.log("[" + moment().format('LTS') + "][SERVER] Initialised.")
-    })
-
-    this.primus.on('close', () => {
-      console.log("[" + moment().format('LTS') + "][SERVER] The server has been destroyed.")
-    })
+    this.primus.on('close', () => this.Log("The server has been destroyed."))
 
     this.primus.on('connection', () => {
-      console.log("[" + moment().format('LTS') + "][SERVER] We received a new connection.")
+      this.Log("We received a new connection.")
+      this.Log("We have " + this.primus.connected + " sparks.")
+
+      // this.primus.forEach((spark, next) => {
+      //   console.log(spark.id)
+      //   next()
+      // }, (err) => {
+      //   console.log('We are done');
+      // })
     })
 
-    this.primus.on('disconnection', () => {
-      console.log("[" + moment().format('LTS') + "][SERVER] We received a disconnection.")
-    })
+    this.primus.on('disconnection', () => this.Log("We received a disconnection."))
 
-    this.primus.on('plugin', () => {
-      console.log("[" + moment().format('LTS') + "][SERVER] A new plugin has been added.")
-    })
+    this.primus.on('plugin', () => this.Log("A new plugin has been added."))
 
-    this.primus.on('plugout', () => {
-      console.log("[" + moment().format('LTS') + "][SERVER] A plugin has been removed.")
-    })
+    this.primus.on('plugout', () => this.Log("A plugin has been removed."))
 
-    this.primus.on('log', (data) => {
-      console.log("[" + moment().format('LTS') + "][SERVER] Log: %s.", data)
-    })
+    this.primus.on('log', (data) => this.Log("Log : " + data))
+  }
+
+  Log (message) {
+    console.log("[" + moment().format('LTS') + '][GameServer] ' + message)
   }
 }
