@@ -6,12 +6,14 @@ window.onload = function () {
 
         // tileWidth = width / 13.5,
         // tileHeight = height * 2 / 19.5;
-        tileWidth = 60,
-        tileHeight = 30;
+        // tileWidth = 60,
+        // tileHeight = 30;
+        tileWidth = width / 14.5,
+        tileHeight = tileWidth / 2;
 
     // context.translate(width / 2, 50);
-    context.translate(tileWidth / 2, 0);
-    // context.translate(tileWidth / 2, tileHeight);
+    // context.translate(tileWidth / 2, 0);
+    context.translate(tileWidth / 2, 100);
     // context.translate(0, - tileHeight / 2);
 
     var grid = [
@@ -30,7 +32,7 @@ window.onload = function () {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -38,11 +40,13 @@ window.onload = function () {
     ];
 
     for (var y = 0; y < grid.length; y++) {
-        var row = grid[y];
-        for (var x = 0; x < row.length; x++) {
-            drawBlock(x, y, row[x], randomColor());
-            // drawTile(x, y, randomColor());
-        }
+      var row = grid[y];
+      for (var x = 0; x < row.length; x++) {
+        // drawBlock(x, y, Math.random() * (1.5 - 0.5) + 0.5, '#654F65')
+        // drawBlock(x, y, Math.floor(Math.random() * 3), randomColor())
+        drawBlock(x, y, row[x], randomColor())
+        // drawTile(x, y, randomColor())
+      }
     }
 
     function shadeBlend(p,c0,c1) {
@@ -67,9 +71,6 @@ window.onload = function () {
 
     function drawBlock(x, y, z, color)
     {
-        // var top = "#eeeeee",
-        //     right = "#cccccc",
-        //     left = "#999999";
         var top = color;
         var right = shadeBlend(-0.5, color);
         var left = shadeBlend(0.3, color);

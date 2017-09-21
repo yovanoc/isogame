@@ -1,14 +1,30 @@
 class GameClient {
 
 	constructor () {
+    this.dispatcher = new Dispatcher()
     this.primus = new Primus('http://localhost:2121')
 
     this.primus.on("open", () => {
       this.Log("Connection opened !")
-      this.Send({message: 'LoginRequested', id: 1, data: { key: '123456'}})
+      var message = {
+        id: 1,
+        message: 'LoginRequested',
+        data: {
+          username: 'superusername',
+          password: 'secretpassword'
+        }
+      }
+      this.Send(message)
      })
 
-    this.primus.on('data', (data) => this.Log('Data Received: ' + JSON.stringify(data)))
+    this.primus.on('data', (data) => {
+      this.Log('Plain data: ' + data)
+      var decryptedData = AesCtr.decrypt(data, 'aZedç8s,;:ùx$w', 256)
+      var parsedMessage = JSON.parse(decryptedData)
+      this.Log('Data Received: #' + parsedMessage.id)
+
+      this.dispatcher.emit(parsedMessage.message, parsedMessage)
+    })
 
     this.primus.on('error', (err) => {
       console.error('[' + moment().format("LTS") + '][GameClient] Something horrible has happened', err.stack)
@@ -51,7 +67,7 @@ class GameClient {
   }
 
 	Send (data) {
-    this.primus.write(data)
+    this.primus.write(AesCtr.encrypt(JSON.stringify(data), 'aZedç8s,;:ùx$w', 256))
   }
 
   Log (message) {

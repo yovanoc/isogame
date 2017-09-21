@@ -20,9 +20,18 @@
         <canvas id="canvas"></canvas>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
         <script src="primus.js"></script>
+        <script src="Aes.js"></script>
+        <script src="AesCtr.js"></script>
+        <script src="Dispatcher.js"></script>
         <script src="GameClient.js"></script>
         <script>
           var client = new GameClient()
+
+          client.dispatcher.register('LoginAccepted', OnLoginAccepted)
+
+          function OnLoginAccepted (message) {
+            console.log('Money: ' + message.data.money)
+          }
         </script>
         <script src="main.js"></script>
     </body>

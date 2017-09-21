@@ -1,17 +1,25 @@
 import Primus from 'primus'
 import moment from 'moment'
+import AesCtr from './AesCtr'
+import Dispatcher from './Dispatcher'
 
 export default class GameServer {
 
   constructor () {
     this.sparks = []
+    this.dispatcher = new Dispatcher()
 
     this.primus = Primus.createServer((spark) => {
       this.Log("[" + spark.id + "] Connected.")
 
       spark.on('data', (data) => {
-        this.Log("[" + spark.id + "] Data : " + JSON.stringify(data))
-        spark.write({message: 'LoginAccepted', id: 2, data: { username: 'username'}})
+        this.Log("[" + spark.id + "] Plain data : " + data)
+
+        var decryptedData = AesCtr.decrypt(data, 'aZedç8s,;:ùx$w', 256)
+        var parsedMessage = JSON.parse(decryptedData)
+        this.Log('Data Received: #' + parsedMessage.id)
+
+        this.dispatcher.emit(parsedMessage.message, spark, parsedMessage)
       })
 
       spark.on('error', (error) => this.Log("[" + spark.id + "] Error : " + error))
@@ -53,6 +61,10 @@ export default class GameServer {
     this.primus.on('plugout', () => this.Log("A plugin has been removed."))
 
     this.primus.on('log', (data) => this.Log("Log : " + data))
+  }
+
+  Send (spark, data) {
+    spark.write(AesCtr.encrypt(JSON.stringify(data), 'aZedç8s,;:ùx$w', 256))
   }
 
   Log (message) {
