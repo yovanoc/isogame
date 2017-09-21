@@ -5,19 +5,37 @@ export default class ClientExample {
     this.client = new Client
 
     this.register()
+    this.events()
+  }
+
+  events () {
+    this.client.dispatcher.register('connected', this.onConnected, this)
   }
 
   register () {
-    this.client.dispatcher.register('LoginAccepted', this.OnLoginAccepted, this)
-    this.client.dispatcher.register('LoginRefused', this.OnLoginRefused, this)
+    this.client.dispatcher.register('LoginAccepted', this.onLoginAccepted, this)
+    this.client.dispatcher.register('LoginRefused', this.onLoginRefused, this)
   }
 
-  OnLoginAccepted (client, message) {
+  onConnected () {
+    var message = {
+      id: 1,
+      message: 'LoginRequested',
+      data: {
+        username: this.client.getId(),
+        password: 'secretpassword'
+      }
+    }
+
+    this.client.send(message)
+  }
+
+  onLoginAccepted (client, message) {
     var account = message.data.account
     console.log(`${account.username} have ${account.money} money.`)
   }
 
-  OnLoginRefused (client, message) {
+  onLoginRefused (client, message) {
     console.log(`${client.getId()} : ${message.data.reason}`)
   }
 }

@@ -6,6 +6,8 @@ import Dispatcher from '../Utility/Dispatcher'
 export default class Client {
 
 	constructor () {
+    this.secret = 'aZedç8s,;:ùx$w'
+
     this.dispatcher = new Dispatcher()
 
     var Socket = Primus.createSocket({ transformer: 'engine.io' })
@@ -13,23 +15,14 @@ export default class Client {
 
     this.primus.on("open", () => {
       this.log("Connection opened !")
-      var message = {
-        id: 1,
-        message: 'LoginRequested',
-        data: {
-          username: this.getId(),
-          password: 'secretpassword'
-        }
-      }
-      this.send(message)
-     })
+      this.dispatcher.emit('connected')
+    })
 
     this.primus.on('data', (data) => {
       // this.log('Plain data: ' + data)
-      var decryptedData = AesCtr.decrypt(data, 'aZedç8s,;:ùx$w', 256)
+      var decryptedData = AesCtr.decrypt(data, this.secret, 256)
       var parsedMessage = JSON.parse(decryptedData)
       // this.log('Data Received: #' + parsedMessage.id)
-
       this.dispatcher.emit(parsedMessage.message, this, parsedMessage)
     })
 
@@ -78,7 +71,7 @@ export default class Client {
   }
 
 	send (data) {
-    this.primus.write(AesCtr.encrypt(JSON.stringify(data), 'aZedç8s,;:ùx$w', 256))
+    this.primus.write(AesCtr.encrypt(JSON.stringify(data), this.secret, 256))
   }
 
   log (message) {

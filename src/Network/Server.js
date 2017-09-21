@@ -6,6 +6,8 @@ import Dispatcher from '../Utility/Dispatcher'
 export default class Server {
 
   constructor () {
+    this.secret = 'aZedç8s,;:ùx$w'
+
     this.sparks = []
     this.dispatcher = new Dispatcher()
 
@@ -14,11 +16,9 @@ export default class Server {
 
       spark.on('data', (data) => {
         // this.log("[" + spark.id + "] Plain data : " + data)
-
-        var decryptedData = AesCtr.decrypt(data, 'aZedç8s,;:ùx$w', 256)
+        var decryptedData = AesCtr.decrypt(data, this.secret, 256)
         var parsedMessage = JSON.parse(decryptedData)
         // this.log('Data Received: #' + parsedMessage.id)
-
         this.dispatcher.emit(parsedMessage.message, spark, parsedMessage)
       })
 
@@ -71,7 +71,7 @@ export default class Server {
   }
 
   send (spark, data) {
-    spark.write(AesCtr.encrypt(JSON.stringify(data), 'aZedç8s,;:ùx$w', 256))
+    spark.write(AesCtr.encrypt(JSON.stringify(data), this.secret, 256))
   }
 
   log (message) {
