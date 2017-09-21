@@ -22,11 +22,13 @@ server.dispatcher.register('LoginRequested', OnLoginRequested)
 
 async function OnLoginRequested (spark, message) {
 
-  var account = await db.setAccount(message.data)
-  // var account = {
-  //   username: 'ol6NnJFnuyP5aBGKAAAA',
-  //   password: 'secretpassword'
-  // }
+  // var account = await db.setAccount(message.data)
+  var account = {
+    username: 'TuCTo4DVjETCr8zwAAAH',
+    password: 'secretpassword'
+  }
+
+  // await db.deleteAccount(account)
 
   try {
     var accountGet = await db.getAccount(account.username, account.password)
@@ -67,7 +69,7 @@ function OnLoginRefused (client, message) {
   console.log(`${client.getId()} : ${message.data.reason}`)
 }
 
-// for (var i = 0; i < 2; i++) {
+// for (var i = 0; i < 19; i++) {
 //   var client = new GameClient
 //   client.dispatcher.register('LoginAccepted', OnLoginAccepted)
 //   client.dispatcher.register('LoginRefused', OnLoginRefused)

@@ -30,6 +30,14 @@ export default class Database {
     })
   }
 
+  deleteAccount (account) {
+    return new Promise(async (resolve, reject) => {
+      await this.redis.delAsync(`isogame.accounts.${account.username}`)
+      await this.redis.sremAsync('isogame.accounts', `isogame.accounts.${account.username}`)
+      resolve()
+    })
+  }
+
   setAccount (account) {
     return new Promise(async (resolve, reject) => {
       account.money = Math.floor(Math.random() * (100 - 10) + 10)
