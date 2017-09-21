@@ -10,24 +10,23 @@ export default class Database {
   }
 
   getAccount (username, password) {
-    return new Promise((resolve, reject) => {
-      this.redis.existsAsync(`isogame.accounts.${username}`)
-      .then(() => {
-        this.redis.hgetallAsync(`isogame.accounts.${username}`)
-        .then((object) => {
-          if (object === null) {
-            reject('Account not found')
-            return
-          }
+    return new Promise(async (resolve, reject) => {
+      try {
+        await this.redis.existsAsync(`isogame.accounts.${username}`)
+        var account = await this.redis.hgetallAsync(`isogame.accounts.${username}`)
+        if (account === null) {
+          reject('Account not found')
+          return
+        }
 
-          if (object.password === password) {
-            resolve(object)
-          } else {
-            reject('Wrong password')
-          }
-        })
-      })
-      .catch((error) => reject('Account not found'))
+        if (account.password === password) {
+          resolve(account)
+        } else {
+          reject('Wrong password')
+        }
+      } catch (e) {
+        reject(e)
+      }
     })
   }
 
