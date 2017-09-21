@@ -1,1 +1,1 @@
-'use strict';require('babel-polyfill');require('./Server');
+'use strict';require('babel-polyfill');require('./main');

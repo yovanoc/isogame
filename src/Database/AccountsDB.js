@@ -1,15 +1,10 @@
-import Redis from 'redis'
-import Bluebird from 'bluebird'
-Bluebird.promisifyAll(Redis.RedisClient.prototype);
-Bluebird.promisifyAll(Redis.Multi.prototype);
+export default class AccountsDB {
 
-export default class Database {
-
-  constructor () {
-    this.redis = Redis.createClient()
+  constructor (redis) {
+    this.redis = redis
   }
 
-  getAccount (username, password) {
+  get (username, password) {
     return new Promise(async (resolve, reject) => {
       try {
         await this.redis.existsAsync(`isogame.accounts.${username}`)
@@ -30,7 +25,7 @@ export default class Database {
     })
   }
 
-  deleteAccount (account) {
+  delete (account) {
     return new Promise(async (resolve, reject) => {
       await this.redis.delAsync(`isogame.accounts.${account.username}`)
       await this.redis.sremAsync('isogame.accounts', `isogame.accounts.${account.username}`)
@@ -38,7 +33,7 @@ export default class Database {
     })
   }
 
-  setAccount (account) {
+  set (account) {
     return new Promise(async (resolve, reject) => {
       account.money = Math.floor(Math.random() * (100 - 10) + 10)
       await this.redis.hmsetAsync(`isogame.accounts.${account.username}`, account)
@@ -47,7 +42,7 @@ export default class Database {
     })
   }
 
-  getAllAccounts () {
+  getAll () {
     return new Promise(async (resolve, reject) => {
       var accounts = []
       var members = await this.redis.smembersAsync('isogame.accounts')

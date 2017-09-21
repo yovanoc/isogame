@@ -1,9 +1,9 @@
 import Primus from 'primus'
 import moment from 'moment'
-import AesCtr from './AesCtr'
-import Dispatcher from './Dispatcher'
+import AesCtr from '../Utility/Aes/AesCtr'
+import Dispatcher from '../Utility/Dispatcher'
 
-export default class GameClient {
+export default class Client {
 
 	constructor () {
     this.dispatcher = new Dispatcher()
@@ -34,7 +34,7 @@ export default class GameClient {
     })
 
     this.primus.on('error', (err) => {
-      console.error('[' + moment().format("LTS") + '][GameClient] Something horrible has happened', err.stack)
+      console.error('[' + moment().format("LTS") + '][Client] Something horrible has happened', err.stack)
     })
 
     this.primus.on('reconnect', (opts) => this.log("Reconnection attempt started"))
@@ -82,6 +82,6 @@ export default class GameClient {
   }
 
   log (message) {
-    console.log("[" + moment().format('LTS') + '][GameClient] ' + message)
+    console.log("[" + moment().format('LTS') + '][Client] ' + message)
   }
 }

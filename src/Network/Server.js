@@ -1,9 +1,9 @@
 import Primus from 'primus'
 import moment from 'moment'
-import AesCtr from './AesCtr'
-import Dispatcher from './Dispatcher'
+import AesCtr from '../Utility/Aes/AesCtr'
+import Dispatcher from '../Utility/Dispatcher'
 
-export default class GameServer {
+export default class Server {
 
   constructor () {
     this.sparks = []
@@ -75,6 +75,6 @@ export default class GameServer {
   }
 
   log (message) {
-    console.log("[" + moment().format('LTS') + '][GameServer] ' + message)
+    console.log("[" + moment().format('LTS') + '][Server] ' + message)
   }
 }
