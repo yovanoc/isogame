@@ -10,41 +10,41 @@ export default class GameServer {
     this.dispatcher = new Dispatcher()
 
     this.primus = Primus.createServer((spark) => {
-      this.Log("[" + spark.id + "] Connected.")
+      this.log("[" + spark.id + "] Connected.")
 
       spark.on('data', (data) => {
-        this.Log("[" + spark.id + "] Plain data : " + data)
+        // this.log("[" + spark.id + "] Plain data : " + data)
 
         var decryptedData = AesCtr.decrypt(data, 'aZedç8s,;:ùx$w', 256)
         var parsedMessage = JSON.parse(decryptedData)
-        this.Log('Data Received: #' + parsedMessage.id)
+        // this.log('Data Received: #' + parsedMessage.id)
 
         this.dispatcher.emit(parsedMessage.message, spark, parsedMessage)
       })
 
-      spark.on('error', (error) => this.Log("[" + spark.id + "] Error : " + error))
+      spark.on('error', (error) => this.log("[" + spark.id + "] Error : " + error))
 
-      spark.on('heartbeat', () => this.Log("[" + spark.id + "] We've received a response to a heartbeat."))
+      spark.on('heartbeat', () => this.log("[" + spark.id + "] We've received a response to a heartbeat."))
 
-      spark.on('readyStateChange', (state) => this.Log("[" + spark.id + "] readyStateChange : " + state))
+      spark.on('readyStateChange', (state) => this.log("[" + spark.id + "] readyStateChange : " + state))
 
       spark.on('end', () => {
-        this.Log("[" + spark.id + "] Disconnected.")
-        this.Log("Remaining " + this.primus.connected + " sparks.")
+        this.log("[" + spark.id + "] Disconnected.")
+        this.log("Remaining " + this.primus.connected + " sparks.")
       })
     }, { port: 2121, transformer: 'engine.io'})
 
-    this.Events()
+    this.events()
   }
 
-  Events () {
-    this.primus.on('initialised', () => this.Log("Initialised."))
+  events () {
+    this.primus.on('initialised', () => this.log("Initialised."))
 
-    this.primus.on('close', () => this.Log("The server has been destroyed."))
+    this.primus.on('close', () => this.log("The server has been destroyed."))
 
     this.primus.on('connection', () => {
-      this.Log("We received a new connection.")
-      this.Log("We have " + this.primus.connected + " sparks.")
+      this.log("We received a new connection.")
+      this.log("We have " + this.primus.connected + " sparks.")
 
       // this.primus.forEach((spark, next) => {
       //   console.log(spark.id)
@@ -54,20 +54,27 @@ export default class GameServer {
       // })
     })
 
-    this.primus.on('disconnection', () => this.Log("We received a disconnection."))
+    this.primus.on('disconnection', () => this.log("We received a disconnection."))
 
-    this.primus.on('plugin', () => this.Log("A new plugin has been added."))
+    this.primus.on('plugin', () => this.log("A new plugin has been added."))
 
-    this.primus.on('plugout', () => this.Log("A plugin has been removed."))
+    this.primus.on('plugout', () => this.log("A plugin has been removed."))
 
-    this.primus.on('log', (data) => this.Log("Log : " + data))
+    this.primus.on('log', (data) => this.log("Log : " + data))
   }
 
-  Send (spark, data) {
+  stop () {
+    // close Close the HTTP server that Primus received. Defaults to true.
+    // reconnect Automatically reconnect the clients. Defaults to false.
+    // timeout Close all active connections and clean up the Primus instance after the specified amount of timeout. Defaults to 0.
+    this.primus.destroy({ timeout: 200 })
+  }
+
+  send (spark, data) {
     spark.write(AesCtr.encrypt(JSON.stringify(data), 'aZedç8s,;:ùx$w', 256))
   }
 
-  Log (message) {
+  log (message) {
     console.log("[" + moment().format('LTS') + '][GameServer] ' + message)
   }
 }
