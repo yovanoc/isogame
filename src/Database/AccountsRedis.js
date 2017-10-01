@@ -1,4 +1,4 @@
-export default class AccountsDB {
+export default class AccountsRedis {
 
   constructor (redis) {
     this.redis = redis

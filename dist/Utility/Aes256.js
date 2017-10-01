@@ -1,0 +1,64 @@
+'use strict';Object.defineProperty(exports,'__esModule',{value:true});var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||false;descriptor.configurable=true;if('value'in descriptor)descriptor.writable=true;Object.defineProperty(target,descriptor.key,descriptor)}}return function(Constructor,protoProps,staticProps){if(protoProps)defineProperties(Constructor.prototype,protoProps);if(staticProps)defineProperties(Constructor,staticProps);return Constructor}}();// Node.js core modules
+var _crypto=require('crypto');var _crypto2=_interopRequireDefault(_crypto);function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj}}function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor)){throw new TypeError('Cannot call a class as a function')}}/**
+ * The encryption algorithm (cipher) type to be used.
+ * @type {String}
+ * @const
+ * @private
+ */var CIPHER_ALGORITHM='aes-256-ctr';//
+// Primary API
+//
+/**
+ * An API to allow for greatly simplified AES-256 encryption and decryption using a passphrase of
+ * any length plus a random Initialization Vector.
+ * @exports aes256
+ * @public
+ */var aes256={/**
+   * Encrypt a clear-text message using AES-256 plus a random Initialization Vector.
+   * @param {String} key  A passphrase of any length to used to generate a symmetric session key.
+   * @param {String} plaintext  The clear-text message to be encrypted.
+   * @returns {String} A custom-encrypted version of the input.
+   * @public
+   * @method
+   */encrypt:function encrypt(key,plaintext){if(typeof key!=='string'||!key){throw new TypeError('Provided "key" must be a non-empty string')}if(typeof plaintext!=='string'||!plaintext){throw new TypeError('Provided "plaintext" must be a non-empty string')}var sha256=_crypto2.default.createHash('sha256');sha256.update(key);// Initialization Vector
+var iv=_crypto2.default.randomBytes(16);var cipher=_crypto2.default.createCipheriv(CIPHER_ALGORITHM,sha256.digest(),iv);var ciphertext=cipher.update(new Buffer(plaintext));var encrypted=Buffer.concat([iv,ciphertext,cipher.final()]).toString('base64');return encrypted},/**
+   * Decrypt an encrypted message back to clear-text using AES-256 plus a random Initialization Vector.
+   * @param {String} key  A passphrase of any length to used to generate a symmetric session key.
+   * @param {String} encrypted  The encrypted message to be decrypted.
+   * @returns {String} The original plain-text message.
+   * @public
+   * @method
+   */decrypt:function decrypt(key,encrypted){if(typeof key!=='string'||!key){throw new TypeError('Provided "key" must be a non-empty string')}if(typeof encrypted!=='string'||!encrypted||encrypted.length<17){throw new TypeError('Provided "encrypted" must be a non-empty string')}var sha256=_crypto2.default.createHash('sha256');sha256.update(key);var input=new Buffer(encrypted,'base64');// Initialization Vector
+var iv=input.slice(0,16);var decipher=_crypto2.default.createDecipheriv(CIPHER_ALGORITHM,sha256.digest(),iv);var ciphertext=input.slice(16);var plaintext=decipher.update(ciphertext)+decipher.final();return plaintext}};/**
+ * Create a symmetric cipher with a given passphrase to then encrypt/decrypt data symmetrically.
+ * @param {String} key  A passphrase of any length to used to generate a symmetric session key.
+ * @protected
+ * @constructor
+ */var AesCipher=function(){function AesCipher(key){_classCallCheck(this,AesCipher);if(typeof key!=='string'||!key){throw new TypeError('Provided "key" must be a non-empty string')}/**
+     * A passphrase of any length to used to generate a symmetric session key.
+     * @member {String} key
+     * @readonly
+     */Object.defineProperty(this,'key',{value:key})}/**
+   * Encrypt a clear-text message using AES-256 plus a random Initialization Vector.
+   * @param {String} plaintext  The clear-text message to be encrypted.
+   * @returns {String} A custom-encrypted version of the input.
+   * @protected
+   * @method
+   */_createClass(AesCipher,[{key:'encrypt',value:function encrypt(plaintext){return aes256.encrypt(this.key,plaintext)}/**
+   * Decrypt an encrypted message back to clear-text using AES-256 plus a random Initialization Vector.
+   * @param {String} encrypted  The encrypted message to be decrypted.
+   * @returns {String} The original plain-text message.
+   * @protected
+   * @method
+   */},{key:'decrypt',value:function decrypt(encrypted){return aes256.decrypt(this.key,encrypted)}}]);return AesCipher}();//
+// API Extension
+//
+/**
+ * Create a symmetric cipher with a given passphrase to then encrypt/decrypt data symmetrically.
+ * @param {String} key  A passphrase of any length to used to generate a symmetric session key.
+ * @returns {AesCipher}
+ * @public
+ * @method
+ */aes256.createCipher=function(key){return new AesCipher(key)};//
+// Export the API
+//
+exports.default=aes256;
