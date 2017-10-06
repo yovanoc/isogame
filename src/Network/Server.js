@@ -8,11 +8,24 @@ export default class Server {
   constructor () {
     this.secret = 'aZedç8s,;:ùx$w'
 
-    this.sparks = []
     this.dispatcher = new Dispatcher()
 
-    this.primus = Primus.createServer((spark) => {
+    this.primus = Primus.createServer({ port: 2121, transformer: 'engine.io', plugin: 'primus-emit'})
+    this.events()
+  }
+
+  events () {
+    this.primus.on('initialised', () => this.log("Initialised."))
+
+    this.primus.on('close', () => this.log("The server has been destroyed."))
+
+    this.primus.on('connection', (spark) => {
+      this.log("We received a new connection.")
+      this.log("We have " + this.primus.connected + " sparks.")
+
       this.log("[" + spark.id + "] Connected.")
+
+      spark.emit('event-name', 'arguments')
 
       spark.on('data', (data) => {
         // this.log("[" + spark.id + "] Plain data : " + data)
@@ -32,19 +45,6 @@ export default class Server {
         this.log("[" + spark.id + "] Disconnected.")
         this.log("Remaining " + this.primus.connected + " sparks.")
       })
-    }, { port: 2121, transformer: 'engine.io'})
-
-    this.events()
-  }
-
-  events () {
-    this.primus.on('initialised', () => this.log("Initialised."))
-
-    this.primus.on('close', () => this.log("The server has been destroyed."))
-
-    this.primus.on('connection', () => {
-      this.log("We received a new connection.")
-      this.log("We have " + this.primus.connected + " sparks.")
 
       // this.primus.forEach((spark, next) => {
       //   console.log(spark.id)

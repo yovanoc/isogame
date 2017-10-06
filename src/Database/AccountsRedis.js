@@ -37,7 +37,6 @@ export default class AccountsRedis {
 
   set (account) {
     return new Promise(async (resolve, reject) => {
-      account.money = Math.floor(Math.random() * (100 - 10) + 10)
       await this.redis.hmsetAsync(`${this.table}.${account.username}`, account)
       await this.redis.saddAsync(`${this.table}`, `${this.table}.${account.username}`)
       resolve(account)

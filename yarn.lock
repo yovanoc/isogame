@@ -1777,6 +1777,10 @@ preserve@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
 
+primus-emit@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/primus-emit/-/primus-emit-1.0.0.tgz#e4b23168706cbea7cba630b482806dbffdf4c3e9"
+
 primus@^7.1.0:
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/primus/-/primus-7.1.0.tgz#1e437c7d7699f7875fc633bc57aa6173cf2e2dfe"

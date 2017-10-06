@@ -10,13 +10,17 @@ export default class Client {
 
     this.dispatcher = new Dispatcher()
 
-    var Socket = Primus.createSocket({ transformer: 'engine.io' })
+    var Socket = Primus.createSocket({ transformer: 'engine.io', plugin: 'primus-emit' })
     this.primus = new Socket('http://localhost:2121')
 
     this.primus.on("open", () => {
       this.log("Connection opened !")
       this.dispatcher.emit('connected')
     })
+
+    this.primus.on('event-name', (arg) => {
+			this.log("test " + arg)
+		})
 
     this.primus.on('data', (data) => {
       // this.log('Plain data: ' + data)
