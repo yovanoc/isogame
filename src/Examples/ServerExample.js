@@ -14,13 +14,8 @@ export default class ServerExample {
   }
 
   async OnLoginRequested (spark, message) {
-    // var account = await this.db.accounts.set(message.data)
-    var account = {
-      username: 'TuCTo4DVjETCr8zwAAAH',
-      password: 'secretpassword'
-    }
-
-    // await this.db.accounts.delete(account)
+    message.data.money = Math.floor(Math.random() * 100 + 10)
+    var account = await this.db.accounts.set(message.data)
 
     try {
       var accountGet = await this.db.accounts.get(account.username, account.password)
@@ -41,6 +36,7 @@ export default class ServerExample {
       }
     } finally {
       this.server.send(spark, message)
+      await this.db.accounts.delete(account)
     }
   }
 }

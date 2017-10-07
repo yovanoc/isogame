@@ -10,12 +10,20 @@ export default class Server {
 
     this.dispatcher = new Dispatcher()
 
-    this.primus = Primus.createServer({ port: 2121, transformer: 'engine.io', plugin: 'primus-emit'})
+    // this.primus = Primus.createServer({ port: 2121, transformer: 'engine.io', plugin: 'primus-emit'})
+
+    this.primus = Primus.createServer({ port: 2121, transformer: 'engine.io'})
+
     this.events()
   }
 
   events () {
-    this.primus.on('initialised', () => this.log("Initialised."))
+    this.primus.on('initialised', () => {
+      this.log("Initialised.")
+
+      this.primus.plugin('emit', require('primus-emit'))
+      // this.primus.plugout('emit')
+    })
 
     this.primus.on('close', () => this.log("The server has been destroyed."))
 
@@ -45,20 +53,13 @@ export default class Server {
         this.log("[" + spark.id + "] Disconnected.")
         this.log("Remaining " + this.primus.connected + " sparks.")
       })
-
-      // this.primus.forEach((spark, next) => {
-      //   console.log(spark.id)
-      //   next()
-      // }, (err) => {
-      //   console.log('We are done');
-      // })
     })
 
     this.primus.on('disconnection', () => this.log("We received a disconnection."))
 
-    this.primus.on('plugin', () => this.log("A new plugin has been added."))
+    this.primus.on('plugin', (name) => this.log(`Plugin ${name} added.`))
 
-    this.primus.on('plugout', () => this.log("A plugin has been removed."))
+    this.primus.on('plugout', (name) => this.log(`Plugin ${name} removed.`))
 
     this.primus.on('log', (data) => this.log("Log : " + data))
   }
@@ -72,6 +73,15 @@ export default class Server {
 
   send (spark, data) {
     spark.write(AesCtr.encrypt(JSON.stringify(data), this.secret, 256))
+  }
+
+  broadcast (data) {
+    this.primus.forEach((spark, next) => {
+      this.send(spark, data)
+      next()
+    }, (err) => {
+      this.log('Broadcast completed.')
+    })
   }
 
   log (message) {
